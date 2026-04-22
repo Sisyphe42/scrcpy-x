@@ -5,6 +5,7 @@ pub mod binaries;
 pub mod commands;
 pub mod device;
 pub mod error;
+pub mod session;
 
 use commands::{
     get_devices, refresh_devices,

@@ -455,7 +455,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(backend): implement device discovery` | Files: src-tauri/src/device/*
 
-- [ ] 9. Implement Session Management (scrcpy Subprocess)
+- [x] 9. Implement Session Management (scrcpy Subprocess)
 
   **What to do**:
   - Create `src-tauri/src/session/mod.rs`
