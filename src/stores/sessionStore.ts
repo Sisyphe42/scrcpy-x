@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { Session } from '../types';
+import { listen } from '@tauri-apps/api/event';
 
 const SESSIONS_KEY = 'scrcpyx-sessions';
 const ACTIVE_SESSION_KEY = 'scrcpyx-activeSession';
@@ -89,6 +90,38 @@ export const useSessionStore = defineStore('session', () => {
     persistSessions(newSessions);
   }
 
+  function setActiveSession(id: string) {
+    activeSessionId.value = id;
+    persistActiveSessionId(id);
+  }
+
+  // Initialize event listeners for session events
+  (async () => {
+    try {
+      void await listen('session-started', (event) => {
+        const session = event.payload as Session;
+        addSession(session);
+      });
+      void await listen('session-ended', (event) => {
+        const payload = event.payload as { sessionId: string };
+        removeSession(payload.sessionId);
+      });
+      void await listen('session-error', (event) => {
+        const payload = event.payload as { sessionId: string; error: string };
+        updateSessionStatus(payload.sessionId, 'Error', payload.error);
+      });
+    } catch {
+      // Event system not available (e.g., during tests)
+    }
+  })();
+
+  // Cleanup on app close
+  if (typeof window !== 'undefined') {
+    window.addEventListener('beforeunload', () => {
+      // Sessions should be cleaned up by backend
+    });
+  }
+
   return {
     sessions,
     activeSessionId,
@@ -98,5 +131,6 @@ export const useSessionStore = defineStore('session', () => {
     removeSession,
     updateSessionStatus,
     setSessions,
+    setActiveSession,
   };
 });

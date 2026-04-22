@@ -1109,7 +1109,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(integration): connect device discovery to ui` | Files: src/stores/deviceStore.ts, src/components/DeviceList.vue
 
-- [ ] 25. Connect Session Management to UI
+- [x] 25. Connect Session Management to UI
 
   **What to do**:
   - Connect Launch button to launch_session API
@@ -1146,7 +1146,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(integration): connect session management to ui` | Files: src/stores/sessionStore.ts, src/views/LaunchView.vue
 
-- [ ] 26. Connect Profile Management to UI
+- [x] 26. Connect Profile Management to UI
 
   **What to do**:
   - Connect ProfileEditor to profile API
@@ -1221,7 +1221,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(integration): implement error handling and notifications` | Files: src/utils/notifications.ts, src/utils/errors.ts
 
-- [ ] 28. Implement Settings View
+- [x] 28. Implement Settings View
 
   **What to do**:
   - Create `src/views/SettingsView.vue` content
