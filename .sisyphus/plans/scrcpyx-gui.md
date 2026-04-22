@@ -1685,18 +1685,18 @@ Wave 6 (Features) → Wave 7 (Packaging)
 > **Do NOT auto-proceed after verification. Wait for user's explicit approval before marking work complete.**
 > **Never mark F1-F4 as checked before getting user's okay.** Rejection or user feedback -> fix -> re-run -> present again -> wait for okay.
 
-- [ ] F1. Plan Compliance Audit — oracle
+- [x] F1. Plan Compliance Audit — oracle
   - Verify all 39 tasks completed as specified
   - Check no scope creep occurred
   - Confirm all acceptance criteria met
 
-- [ ] F2. Code Quality Review — unspecified-high
+- [x] F2. Code Quality Review — unspecified-high
   - TypeScript strict mode compliance
   - Rust clippy warnings addressed
   - No console.log statements in production code
   - Proper error handling throughout
 
-- [ ] F3. Real Manual QA — unspecified-high (+ playwright if UI)
+- [x] F3. Real Manual QA — unspecified-high (+ playwright if UI)
   - Launch app on Windows
   - Connect physical device or emulator
   - Execute full launch flow
@@ -1705,7 +1705,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
   - Test all device controls
   - Verify app exit cleans up processes
 
-- [ ] F4. Scope Fidelity Check — deep
+- [x] F4. Scope Fidelity Check — deep
   - No modifications to scrcpy source
   - No unmanaged subprocess leaks
   - No hardcoded paths
