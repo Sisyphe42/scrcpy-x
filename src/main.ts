@@ -1,33 +1,35 @@
-import { createApp } from "vue";
-import { createPinia } from "pinia";
-import { createRouter, createWebHistory } from "vue-router";
-import naive from "naive-ui";
-import { i18n } from "./locales";
-import App from "./App.vue";
+import { createApp } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
+import App from './App.vue';
+import './styles.css';
+import './i18n'; // if you have i18n setup
 
-// Create Pinia store
-const pinia = createPinia();
-
-// Create Vue Router (basic setup for now)
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/",
-      name: "home",
-      component: () => import("./views/HomeView.vue"),
+      path: '/',
+      component: () => import('./layouts/MainLayout.vue'),
+      redirect: '/devices',
+      children: [
+        {
+          path: 'devices',
+          name: 'devices',
+          component: () => import('./views/DevicesView.vue'),
+        },
+        {
+          path: 'profiles',
+          name: 'profiles',
+          component: () => import('./views/ProfilesView.vue'),
+        },
+        {
+          path: 'settings',
+          name: 'settings',
+          component: () => import('./views/SettingsView.vue'),
+        },
+      ],
     },
   ],
 });
 
-// Create and configure app
-const app = createApp(App);
-
-// Use plugins
-app.use(pinia);
-app.use(router);
-app.use(naive);
-app.use(i18n);
-
-// Mount app
-app.mount("#app");
+createApp(App).use(router).mount('#app');
