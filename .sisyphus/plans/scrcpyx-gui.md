@@ -635,7 +635,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(types): define typescript types and interfaces` | Files: src/types/*
 
-- [ ] 13. Implement Pinia Stores
+- [x] 13. Implement Pinia Stores
 
   **What to do**:
   - Create `src/stores/` directory
@@ -674,7 +674,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(store): implement pinia stores` | Files: src/stores/*
 
-- [ ] 14. Implement Profile Storage Backend
+- [x] 14. Implement Profile Storage Backend
 
   **What to do**:
   - Create `src-tauri/src/storage/mod.rs`
@@ -721,7 +721,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(backend): implement profile storage` | Files: src-tauri/src/storage/*
 
-- [ ] 15. Implement Settings Persistence
+- [x] 15. Implement Settings Persistence
 
   **What to do**:
   - Create `src-tauri/src/settings/mod.rs`

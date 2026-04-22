@@ -1,68 +1,23 @@
 //! Settings management commands
-//! 
+//!
 //! Commands for managing application settings.
 
-use serde::{Deserialize, Serialize};
+use crate::settings as settings_mod;
 use crate::binaries::{find_adb, find_scrcpy};
+use serde::{Deserialize, Serialize};
 
-/// Application settings
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct AppSettings {
-    /// Last used profile
-    pub last_profile: Option<String>,
-    /// Window bounds
-    pub window_bounds: Option<WindowBounds>,
-    /// Binary paths
-    pub binary_paths: BinaryPaths,
-    /// Theme setting
-    pub theme: String,
-    /// Max concurrent sessions
-    pub max_sessions: u8,
-}
-
-/// Window position and size
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct WindowBounds {
-    pub x: i32,
-    pub y: i32,
-    pub width: u32,
-    pub height: u32,
-}
-
-/// Binary paths configuration
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct BinaryPaths {
-    pub adb: Option<String>,
-    pub scrcpy: Option<String>,
-}
-
-impl Default for AppSettings {
-    fn default() -> Self {
-        Self {
-            last_profile: None,
-            window_bounds: None,
-            binary_paths: BinaryPaths {
-                adb: None,
-                scrcpy: None,
-            },
-            theme: "system".to_string(),
-            max_sessions: 5,
-        }
-    }
-}
+use crate::settings::AppSettings;
 
 /// Get application settings
 #[tauri::command]
 pub async fn get_settings() -> Result<AppSettings, String> {
-    // TODO: Implement settings load from persistent storage
-    Ok(AppSettings::default())
+    settings_mod::load_settings()
 }
 
 /// Save application settings
 #[tauri::command]
-pub async fn save_settings(_settings: AppSettings) -> Result<(), String> {
-    // TODO: Implement settings save to persistent storage
-    Ok(())
+pub async fn save_settings(settings: AppSettings) -> Result<(), String> {
+    settings_mod::save_settings(settings)
 }
 
 /// Get ADB path

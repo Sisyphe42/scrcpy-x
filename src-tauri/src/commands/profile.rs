@@ -1,51 +1,42 @@
 //! Profile management commands
-//! 
+//!
 //! Commands for managing configuration profiles.
 
 use serde::{Deserialize, Serialize};
 
-/// Profile information
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct Profile {
-    /// Profile name
-    pub name: String,
-    /// Whether this is the default profile
-    pub is_default: bool,
-    /// Session options
-    pub options: super::session::SessionOptions,
-}
+// Re-export storage profile type for FFI boundary
+// The actual storage logic lives in the storage module.
+use crate::storage::Profile as StorageProfile;
 
 /// Get all saved profiles
 #[tauri::command]
-pub async fn get_profiles() -> Result<Vec<Profile>, String> {
-    // TODO: Implement profile listing
-    Ok(vec![])
+pub async fn get_profiles() -> Result<Vec<StorageProfile>, String> {
+    crate::storage::list_profiles().await
 }
 
 /// Get profile by name
 #[tauri::command]
-pub async fn get_profile(name: String) -> Result<Option<Profile>, String> {
-    // TODO: Implement profile lookup
-    Ok(None)
+pub async fn get_profile(name: String) -> Result<Option<StorageProfile>, String> {
+    match crate::storage::load_profile(name).await {
+        Ok(p) => Ok(Some(p)),
+        Err(_) => Ok(None),
+    }
 }
 
 /// Save a profile
 #[tauri::command]
-pub async fn save_profile(profile: Profile) -> Result<(), String> {
-    // TODO: Implement profile save
-    Ok(())
+pub async fn save_profile(profile: StorageProfile) -> Result<(), String> {
+    crate::storage::save_profile(profile).await
 }
 
 /// Delete a profile
 #[tauri::command]
 pub async fn delete_profile(name: String) -> Result<(), String> {
-    // TODO: Implement profile delete
-    Ok(())
+    crate::storage::delete_profile(name).await
 }
 
 /// Set default profile
 #[tauri::command]
 pub async fn set_default_profile(name: String) -> Result<(), String> {
-    // TODO: Implement set default profile
-    Ok(())
+    crate::storage::set_default_profile(name).await
 }

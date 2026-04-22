@@ -7,6 +7,8 @@ pub mod controls;
 pub mod device;
 pub mod error;
 pub mod session;
+pub mod storage;
+pub mod settings;
 pub mod events;
 
 use commands::{
@@ -19,8 +21,20 @@ use commands::{
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    // Attempt to preload settings on startup (best-effort)
+    let _ = crate::settings::load_settings();
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
+        .on_window_event(|window, event| {
+            // Auto-save settings on close request
+            if let tauri::WindowEvent::CloseRequested { .. } = event {
+                if let Ok(s) = crate::settings::load_settings() {
+                    let _ = crate::settings::save_settings(s);
+                }
+            }
+            // Allow other events to propagate
+            let _ = window;
+        })
         .invoke_handler(tauri::generate_handler![
             // Device commands
             get_devices,
