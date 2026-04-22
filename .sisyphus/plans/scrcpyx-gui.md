@@ -362,7 +362,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(backend): define tauri command structure` | Files: src-tauri/src/commands/*, src-tauri/src/error.rs, src-tauri/src/main.rs
 
-- [ ] 7. Implement Binary Resolution (ADB & scrcpy)
+- [x] 7. Implement Binary Resolution (ADB & scrcpy)
 
   **What to do**:
   - Create `src-tauri/src/binaries/mod.rs`
@@ -408,7 +408,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(backend): implement binary resolution` | Files: src-tauri/src/binaries/*
 
-- [ ] 8. Implement Device Discovery (ADB Integration)
+- [x] 8. Implement Device Discovery (ADB Integration)
 
   **What to do**:
   - Create `src-tauri/src/device/mod.rs`

@@ -3,6 +3,7 @@
 //! Commands for managing application settings.
 
 use serde::{Deserialize, Serialize};
+use crate::binaries::{find_adb, find_scrcpy};
 
 /// Application settings
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -53,27 +54,31 @@ impl Default for AppSettings {
 /// Get application settings
 #[tauri::command]
 pub async fn get_settings() -> Result<AppSettings, String> {
-    // TODO: Implement settings load
+    // TODO: Implement settings load from persistent storage
     Ok(AppSettings::default())
 }
 
 /// Save application settings
 #[tauri::command]
-pub async fn save_settings(settings: AppSettings) -> Result<(), String> {
-    // TODO: Implement settings save
+pub async fn save_settings(_settings: AppSettings) -> Result<(), String> {
+    // TODO: Implement settings save to persistent storage
     Ok(())
 }
 
 /// Get ADB path
 #[tauri::command]
 pub async fn get_adb_path() -> Result<Option<String>, String> {
-    // TODO: Implement ADB path resolution
-    Ok(None)
+    match find_adb() {
+        Ok(path) => Ok(Some(path.to_string_lossy().to_string())),
+        Err(_) => Ok(None),
+    }
 }
 
 /// Get scrcpy path
 #[tauri::command]
 pub async fn get_scrcpy_path() -> Result<Option<String>, String> {
-    // TODO: Implement scrcpy path resolution
-    Ok(None)
+    match find_scrcpy() {
+        Ok(path) => Ok(Some(path.to_string_lossy().to_string())),
+        Err(_) => Ok(None),
+    }
 }
