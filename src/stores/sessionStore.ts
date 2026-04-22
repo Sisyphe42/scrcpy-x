@@ -77,6 +77,18 @@ export const useSessionStore = defineStore('session', () => {
     }
   }
 
+  function setSessions(newSessions: Session[]) {
+    sessions.value = newSessions;
+    // Attempt to keep a reasonable active session if the previous one is still present
+    if (activeSessionId.value) {
+      const exists = newSessions.find(s => s.id === activeSessionId.value);
+      if (!exists) {
+        activeSessionId.value = null;
+      }
+    }
+    persistSessions(newSessions);
+  }
+
   return {
     sessions,
     activeSessionId,
@@ -85,5 +97,6 @@ export const useSessionStore = defineStore('session', () => {
     addSession,
     removeSession,
     updateSessionStatus,
+    setSessions,
   };
 });

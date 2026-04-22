@@ -758,7 +758,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(backend): implement settings persistence` | Files: src-tauri/src/settings/*
 
-- [ ] 16. Connect Stores to Backend Commands
+- [x] 16. Connect Stores to Backend Commands
 
   **What to do**:
   - Create `src/api/` directory for Tauri command wrappers
