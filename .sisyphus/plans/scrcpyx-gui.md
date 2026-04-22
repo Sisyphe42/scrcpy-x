@@ -511,7 +511,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(backend): implement session management` | Files: src-tauri/src/session/*
 
-- [ ] 10. Implement Device Control Commands
+- [x] 10. Implement Device Control Commands
 
   **What to do**:
   - Create `src-tauri/src/controls/mod.rs`
@@ -557,7 +557,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(backend): implement device control commands` | Files: src-tauri/src/controls/*
 
-- [ ] 11. Implement Event Emission System
+- [x] 11. Implement Event Emission System
 
   **What to do**:
   - Create `src-tauri/src/events/mod.rs`

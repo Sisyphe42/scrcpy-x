@@ -6,8 +6,10 @@ mod device;
 mod session;
 mod profile;
 mod settings;
+mod controls;
 
 pub use device::*;
 pub use session::*;
 pub use profile::*;
 pub use settings::*;
+pub use controls::*;
