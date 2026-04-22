@@ -100,3 +100,4 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 - [scrcpy](https://github.com/Genymobile/scrcpy) - The underlying screen mirroring tool
 - [Tauri](https://tauri.app/) - Cross-platform desktop app framework
 - [Naive UI](https://www.naiveui.com/) - Vue 3 UI component library
+// This patch adds Profile Management UI components and supporting types.

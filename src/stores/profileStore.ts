@@ -52,7 +52,7 @@ export const useProfileStore = defineStore('profile', () => {
     if (!activeProfileName.value) return null;
     return profiles.value.find(p => p.name === activeProfileName.value) ?? null;
   });
-  const defaultProfile = computed<Profile | null>(() => profiles.value.find(p => p.isDefault) ?? null);
+  const defaultProfile = computed<Profile | null>(() => profiles.value.find(p => p.is_default) ?? null);
 
   function loadProfiles(newProfiles: Profile[]) {
     profiles.value = newProfiles;
