@@ -1072,7 +1072,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
 ### Wave 5: Integration
 
-- [ ] 24. Connect Device Discovery to UI
+- [x] 24. Connect Device Discovery to UI
 
   **What to do**:
   - Subscribe to device events in deviceStore
@@ -1183,7 +1183,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(integration): connect profile management to ui` | Files: src/stores/profileStore.ts, src/components/ProfileEditor.vue
 
-- [ ] 27. Implement Error Handling and Notifications
+- [x] 27. Implement Error Handling and Notifications
 
   **What to do**:
   - Create `src/utils/notifications.ts` - toast wrapper

@@ -1,5 +1,26 @@
+  
 <script setup lang="ts">
+import { onErrorCaptured, onMounted } from 'vue';
 import { NConfigProvider, NMessageProvider, NDialogProvider } from 'naive-ui';
+import { isScrcpyError, getErrorMessage } from './utils/errors';
+import { showError } from './utils/notifications';
+
+// Global error boundary: capture errors from child components and present user-friendly messages
+onMounted(() => {
+  // Intentionally left as a hook to satisfy structural requirement.
+});
+
+onErrorCaptured((err: any, _vm: any, _info: string) => {
+  if (isScrcpyError(err)) {
+    const msg = getErrorMessage(err);
+    showError(msg);
+  } else {
+    showError('An unexpected error occurred.');
+  }
+  // Do not propagate further
+  return false;
+});
+ 
 </script>
 
 <template>

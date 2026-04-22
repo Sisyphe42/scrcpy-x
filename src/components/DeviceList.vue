@@ -5,6 +5,7 @@ import type { DataTableColumns } from 'naive-ui';
 import { useDeviceStore } from '../stores/deviceStore';
 import { refreshDevices } from '../api';
 import type { Device } from '../types';
+import { onMounted, onUnmounted } from 'vue';
 
 const store = useDeviceStore();
 const message = useMessage();
@@ -38,6 +39,23 @@ async function handleRefresh() {
     message.error('Failed to refresh devices');
   }
 }
+
+onMounted(() => {
+  const handler = (ev: Event) => {
+    const detail = (ev as CustomEvent).detail as { type: string; device?: Device; deviceId?: string };
+    if (!detail) return;
+    if (detail.type === 'connected') {
+      const d = detail.device as Device | undefined;
+      message.success(`Device connected: ${d?.name ?? d?.id ?? ''}`);
+    } else if (detail.type === 'disconnected') {
+      message.success(`Device disconnected: ${detail.deviceId ?? ''}`);
+    }
+  };
+  window.addEventListener('device-update', handler as EventListener);
+  onUnmounted(() => {
+    window.removeEventListener('device-update', handler as EventListener);
+  });
+});
 </script>
 
 <template>
