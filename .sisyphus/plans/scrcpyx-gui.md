@@ -838,7 +838,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(ui): create app layout and navigation` | Files: src/layouts/*, src/views/*, src/router/*
 
-- [ ] 18. Create Device List Component
+- [x] 18. Create Device List Component
 
   **What to do**:
   - Create `src/components/DeviceList.vue`
@@ -877,7 +877,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(ui): create device list component` | Files: src/components/DeviceList.vue
 
-- [ ] 19. Create Session Options Form
+- [x] 19. Create Session Options Form
 
   **What to do**:
   - Create `src/components/SessionOptionsForm.vue`
@@ -916,7 +916,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(ui): create session options form` | Files: src/components/SessionOptionsForm.vue
 
-- [ ] 20. Create Profile Management UI
+- [x] 20. Create Profile Management UI
 
   **What to do**:
   - Create `src/components/ProfileList.vue` - list saved profiles
@@ -954,7 +954,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(ui): create profile management ui` | Files: src/components/ProfileList.vue, src/components/ProfileEditor.vue
 
-- [ ] 21. Create Device Control Panel
+- [x] 21. Create Device Control Panel
 
   **What to do**:
   - Create `src/components/DeviceControlPanel.vue`
@@ -994,7 +994,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(ui): create device control panel` | Files: src/components/DeviceControlPanel.vue
 
-- [ ] 22. Create Session Status View
+- [x] 22. Create Session Status View
 
   **What to do**:
   - Create `src/components/SessionStatus.vue`
@@ -1032,7 +1032,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat(ui): create session status view` | Files: src/components/SessionStatus.vue
 
-- [ ] 23. Create Launch View (Main Action UI)
+- [x] 23. Create Launch View (Main Action UI)
 
   **What to do**:
   - Create `src/views/LaunchView.vue`
