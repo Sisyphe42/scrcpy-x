@@ -1,13 +1,19 @@
   
 <script setup lang="ts">
-import { onErrorCaptured, onMounted } from 'vue';
+import { onErrorCaptured, onMounted, onUnmounted } from 'vue';
 import { NConfigProvider, NMessageProvider, NDialogProvider } from 'naive-ui';
 import { isScrcpyError, getErrorMessage } from './utils/errors';
 import { showError } from './utils/notifications';
+import { handleKeyboard } from './utils/shortcuts';
 
 // Global error boundary: capture errors from child components and present user-friendly messages
 onMounted(() => {
-  // Intentionally left as a hook to satisfy structural requirement.
+  // Register global keyboard shortcuts
+  window.addEventListener('keydown', handleKeyboard);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyboard);
 });
 
 onErrorCaptured((err: any, _vm: any, _info: string) => {

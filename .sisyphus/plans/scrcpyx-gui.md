@@ -1261,7 +1261,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
 ### Wave 6: Features
 
-- [ ] 29. Implement Multi-Device Session Management
+- [x] 29. Implement Multi-Device Session Management
 
   **What to do**:
   - Enable multi-select in DeviceList
@@ -1299,7 +1299,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat: implement multi-device session management` | Files: src/components/DeviceList.vue, src/stores/sessionStore.ts
 
-- [ ] 30. Implement Screenshot Feature
+- [x] 30. Implement Screenshot Feature
 
   **What to do**:
   - Add screenshot button to control panel
@@ -1337,7 +1337,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat: implement screenshot feature` | Files: src/components/DeviceControlPanel.vue
 
-- [ ] 31. Implement Recording Feature
+- [x] 31. Implement Recording Feature
 
   **What to do**:
   - Add recording controls to session options
@@ -1375,7 +1375,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat: implement recording feature` | Files: src/components/SessionOptionsForm.vue, src/stores/sessionStore.ts
 
-- [ ] 32. Implement Keyboard Shortcuts
+- [x] 32. Implement Keyboard Shortcuts
 
   **What to do**:
   - Create `src/utils/shortcuts.ts` - shortcut definitions
@@ -1412,7 +1412,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat: implement keyboard shortcuts` | Files: src/utils/shortcuts.ts
 
-- [ ] 33. Implement Window State Persistence
+- [x] 33. Implement Window State Persistence
 
   **What to do**:
   - Save window position and size on close
@@ -1449,7 +1449,7 @@ Wave 6 (Features) → Wave 7 (Packaging)
 
   **Commit**: YES | Message: `feat: implement window state persistence` | Files: src/stores/settingsStore.ts
 
-- [ ] 34. Implement Binary Bundling Setup
+- [x] 34. Implement Binary Bundling Setup
 
   **What to do**:
   - Create `src-tauri/binaries/` directory
