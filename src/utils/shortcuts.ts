@@ -1,6 +1,6 @@
-import { useSessionStore } from '../stores/sessionStore';
 import { refreshDevices } from '../api/devices';
 import { takeScreenshot, sendKeyEvent } from '../api/sessions';
+import { useSessionStore } from '../stores/sessionStore';
 
 export interface Shortcut {
   key: string;
@@ -10,8 +10,6 @@ export interface Shortcut {
   requiresSession?: boolean;
   description: string;
 }
-
-const sessionStore = useSessionStore();
 
 export const shortcuts: Record<string, Shortcut> = {
   refresh: {
@@ -24,6 +22,7 @@ export const shortcuts: Record<string, Shortcut> = {
     key: 's',
     ctrl: true,
     action: async () => {
+      const sessionStore = useSessionStore();
       const session = sessionStore.activeSession;
       if (session) {
         await takeScreenshot(session.id);
@@ -36,6 +35,7 @@ export const shortcuts: Record<string, Shortcut> = {
     key: 'f',
     ctrl: false,
     action: async () => {
+      const sessionStore = useSessionStore();
       const session = sessionStore.activeSession;
       if (session) {
         await sendKeyEvent(session.id, 'F11');
@@ -48,6 +48,7 @@ export const shortcuts: Record<string, Shortcut> = {
     key: 'o',
     ctrl: false,
     action: async () => {
+      const sessionStore = useSessionStore();
       const session = sessionStore.activeSession;
       if (session) {
         await sendKeyEvent(session.id, 'POWER');
@@ -60,6 +61,7 @@ export const shortcuts: Record<string, Shortcut> = {
     key: 'b',
     ctrl: false,
     action: async () => {
+      const sessionStore = useSessionStore();
       const session = sessionStore.activeSession;
       if (session) {
         await sendKeyEvent(session.id, 'BACK');
@@ -72,6 +74,7 @@ export const shortcuts: Record<string, Shortcut> = {
     key: 'h',
     ctrl: false,
     action: async () => {
+      const sessionStore = useSessionStore();
       const session = sessionStore.activeSession;
       if (session) {
         await sendKeyEvent(session.id, 'HOME');
@@ -89,6 +92,7 @@ export function handleKeyboard(event: KeyboardEvent): boolean {
     return false;
   }
 
+  const sessionStore = useSessionStore();
   const hasActiveSession = !!sessionStore.activeSession;
 
   for (const shortcut of Object.values(shortcuts)) {
