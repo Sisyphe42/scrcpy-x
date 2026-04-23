@@ -56,10 +56,10 @@ const emit = defineEmits<{ (e: 'select', session: Session): void }>();
 const store = useSessionStore();
 
 // Access the raw sessions array from the store via a computed wrapper
-const sessionsList = computed(() => store.sessions.value);
+const sessionsList = computed(() => store.sessions);
 
 // Show all sessions that are not yet stopped (active sessions)
-const activeSessions = computed(() => sessionsList.value.filter(s => s.status !== 'Stopped'));
+const activeSessions = computed(() => sessionsList.value.filter((s: Session) => s.status !== 'Stopped'));
 
 // Local per-session stop error messages
 const stopErrors = ref<Record<string, string>>({});

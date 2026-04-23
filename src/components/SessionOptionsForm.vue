@@ -10,13 +10,12 @@
 <script lang="ts">
 import { defineComponent, ref, watch } from 'vue';
 import { NInput } from 'naive-ui';
-import type { Profile } from '@/types/profile';
 export default defineComponent({
   name: 'SessionOptionsForm',
   components: { NInput },
   props: {
     options: {
-      type: Object as () => any,
+      type: Object as () => Record<string, unknown>,
       default: () => ({}),
     },
   },

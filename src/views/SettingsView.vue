@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
-import { NCard, NForm, NFormItem, NInput, NSelect, NSwitch, NInputNumber, NButton, NSpace, useMessage } from 'naive-ui';
+import { ref, watch } from 'vue';
+import { NCard, NForm, NFormItem, NInput, NSelect, NInputNumber, useMessage } from 'naive-ui';
 import { useSettingsStore } from '../stores/settingsStore';
-import { open } from '@tauri-apps/api/dialog';
 
 const store = useSettingsStore();
 const message = useMessage();
@@ -38,34 +37,6 @@ function debouncedSave() {
 }
 
 watch(settings, debouncedSave, { deep: true });
-
-async function browseAdb() {
-  try {
-    const path = await open({
-      filters: [{ name: 'Executable', extensions: ['exe', ''] }],
-      title: 'Select ADB executable'
-    });
-    if (path && typeof path === 'string') {
-      settings.value.adbPath = path;
-    }
-  } catch {
-    // User cancelled
-  }
-}
-
-async function browseScrcpy() {
-  try {
-    const path = await open({
-      filters: [{ name: 'Executable', extensions: ['exe', ''] }],
-      title: 'Select scrcpy executable'
-    });
-    if (path && typeof path === 'string') {
-      settings.value.scrcpyPath = path;
-    }
-  } catch {
-    // User cancelled
-  }
-}
 </script>
 
 <template>
@@ -75,23 +46,17 @@ async function browseScrcpy() {
         <n-form-item label="Theme">
           <n-select v-model:value="settings.theme" :options="themeOptions" />
         </n-form-item>
-        
+
         <n-form-item label="Max Sessions">
           <n-input-number v-model:value="settings.maxSessions" :min="1" :max="10" />
         </n-form-item>
-        
+
         <n-form-item label="ADB Path">
-          <n-space vertical style="width: 100%;">
-            <n-input v-model:value="settings.adbPath" placeholder="Leave empty to use PATH" />
-            <n-button size="small" @click="browseAdb">Browse</n-button>
-          </n-space>
+          <n-input v-model:value="settings.adbPath" placeholder="Leave empty to use PATH" />
         </n-form-item>
-        
+
         <n-form-item label="Scrcpy Path">
-          <n-space vertical style="width: 100%;">
-            <n-input v-model:value="settings.scrcpyPath" placeholder="Leave empty to use PATH" />
-            <n-button size="small" @click="browseScrcpy">Browse</n-button>
-          </n-space>
+          <n-input v-model:value="settings.scrcpyPath" placeholder="Leave empty to use PATH" />
         </n-form-item>
       </n-form>
     </n-card>

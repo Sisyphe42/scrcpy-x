@@ -49,10 +49,10 @@ const launch = async () => {
 };
 
 // Optional: bind quickProfile changes to future profile store integration
-watch(quickProfile, (val) => {
-  // This is a placeholder for future integration
-  // If a method exists on profileStore to set active profile by id, call it here.
-  // e.g., (profileStore as any).setActiveProfile?.(val);
+watch(quickProfile, (newVal) => {
+  if (newVal) {
+    profileStore.setActiveProfile(newVal);
+  }
 });
 </script>
 

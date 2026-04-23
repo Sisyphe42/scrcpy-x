@@ -23,7 +23,7 @@
 <script lang="ts">
 import { defineComponent, ref, watch, toRef } from 'vue';
 import { NModal, NForm, NFormItem, NInput, NSwitch, NButton } from 'naive-ui';
-import type { Profile } from '@/types/profile';
+import type { Profile } from '../types/profile';
 import SessionOptionsForm from './SessionOptionsForm.vue';
 
 export default defineComponent({

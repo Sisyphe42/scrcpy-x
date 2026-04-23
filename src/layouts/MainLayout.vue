@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, h } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
-import { NLayout, NLayoutSider, NLayoutContent, NMenu, NConfigProvider } from 'naive-ui';
+import { NLayout, NLayoutSider, NLayoutContent, NMenu } from 'naive-ui';
 import type { MenuOption } from 'naive-ui';
 
 const router = useRouter();

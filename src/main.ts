@@ -1,8 +1,7 @@
 import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import App from './App.vue';
-import './styles.css';
-import './i18n'; // if you have i18n setup
+import { i18n } from './locales';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -32,4 +31,4 @@ const router = createRouter({
   ],
 });
 
-createApp(App).use(router).mount('#app');
+createApp(App).use(router).use(i18n).mount('#app');

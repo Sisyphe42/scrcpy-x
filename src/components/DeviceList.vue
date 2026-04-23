@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { h, ref } from 'vue';
+import { h, ref, onMounted, onUnmounted } from 'vue';
 import { NDataTable, NButton, NSpin, NEmpty, NTag, useMessage } from 'naive-ui';
-import type { DataTableColumns } from 'naive-ui';
+import type { DataTableColumns, DataTableRowKey } from 'naive-ui';
 import { useDeviceStore } from '../stores/deviceStore';
 import { refreshDevices } from '../api';
 import type { Device } from '../types';
-import { onMounted, onUnmounted } from 'vue';
 
 const store = useDeviceStore();
 const message = useMessage();
@@ -24,11 +23,11 @@ const columns: DataTableColumns<Device> = [
   },
 ];
 
-const selectedKeys = ref<string[]>(store.selectedDeviceId ? [store.selectedDeviceId] : []);
+const selectedKeys = ref<DataTableRowKey[]>(store.selectedDeviceId ? [store.selectedDeviceId] : []);
 
-function updateSelectedKeys(val: string[]) {
-  selectedKeys.value = val;
-  store.selectDevice(val[0] ?? '');
+function updateSelectedKeys(keys: DataTableRowKey[]) {
+  selectedKeys.value = keys;
+  store.selectDevice(String(keys[0] ?? ''));
 }
 
 async function handleRefresh() {
@@ -66,7 +65,7 @@ onMounted(() => {
         v-if="store.devices?.length > 0"
         :columns="columns"
         :data="store.devices"
-        :row-key="row => row.id"
+        :row-key="(row: Device) => row.id"
         :checked-row-keys="selectedKeys"
         @update:checked-row-keys="updateSelectedKeys"
         :single-line="false"
