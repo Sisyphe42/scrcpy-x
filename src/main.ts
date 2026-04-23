@@ -1,46 +1,34 @@
 import { createApp } from 'vue';
 import { createRouter, createWebHistory } from 'vue-router';
-import { createPinia } from 'pinia';
 import App from './App.vue';
 import { i18n } from './locales';
-import MainLayout from './layouts/MainLayout.vue';
-import DevicesView from './views/DevicesView.vue';
-import ProfilesView from './views/ProfilesView.vue';
-import SettingsView from './views/SettingsView.vue';
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: '/',
-      component: MainLayout,
+      component: () => import('./layouts/MainLayout.vue'),
+      redirect: '/devices',
       children: [
-        {
-          path: '',
-          redirect: '/devices',
-        },
         {
           path: 'devices',
           name: 'devices',
-          component: DevicesView,
+          component: () => import('./views/DevicesView.vue'),
         },
         {
           path: 'profiles',
           name: 'profiles',
-          component: ProfilesView,
+          component: () => import('./views/ProfilesView.vue'),
         },
         {
           path: 'settings',
           name: 'settings',
-          component: SettingsView,
+          component: () => import('./views/SettingsView.vue'),
         },
       ],
     },
   ],
 });
 
-const app = createApp(App);
-app.use(createPinia());
-app.use(router);
-app.use(i18n);
-app.mount('#app');
+createApp(App).use(router).use(i18n).mount('#app');
