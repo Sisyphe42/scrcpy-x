@@ -26,3 +26,11 @@ src-tauri/target/
 *.sln
 *.sw?
 opencode.json
+
+# Sisyphus session-local files (plans/ are tracked)
+.sisyphus/boulder.json
+.sisyphus/ralph-loop.local.md
+.sisyphus/run-continuation/
+.sisyphus/notepads/
+.sisyphus/drafts/
+.sisyphus/evidence/
