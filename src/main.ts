@@ -43,6 +43,12 @@ const router = createRouter({
         },
       ],
     },
+    // Floating panel — standalone, no sidebar layout
+    {
+      path: '/floating-panel',
+      name: 'floating-panel',
+      component: () => import('./views/FloatingPanelView.vue'),
+    },
   ],
 });
 

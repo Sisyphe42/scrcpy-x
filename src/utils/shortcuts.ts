@@ -2,6 +2,12 @@ import { refreshDevices } from '../api/devices';
 import { takeScreenshot, sendKeyEvent } from '../api/sessions';
 import { useSessionStore } from '../stores/sessionStore';
 
+// Lazy router reference — set by App.vue on mount
+let _router: any = null;
+export function setRouter(router: any) {
+  _router = router;
+}
+
 export interface Shortcut {
   key: string;
   ctrl: boolean;
@@ -10,6 +16,9 @@ export interface Shortcut {
   requiresSession?: boolean;
   description: string;
 }
+
+// Page navigation order for Ctrl+Tab cycling
+const PAGE_ORDER = ['launch', 'sessions', 'settings'];
 
 export const shortcuts: Record<string, Shortcut> = {
   refresh: {
@@ -90,6 +99,20 @@ export function handleKeyboard(event: KeyboardEvent): boolean {
   const target = event.target as HTMLElement;
   if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
     return false;
+  }
+
+  // Ctrl+Tab: cycle to next page, Ctrl+Shift+Tab: previous
+  if (event.ctrlKey && event.key === 'Tab') {
+    event.preventDefault();
+    if (_router) {
+      const currentRoute = _router.currentRoute?.value?.name as string;
+      const currentIdx = PAGE_ORDER.indexOf(currentRoute);
+      const nextIdx = event.shiftKey
+        ? (currentIdx - 1 + PAGE_ORDER.length) % PAGE_ORDER.length
+        : (currentIdx + 1) % PAGE_ORDER.length;
+      _router.push({ name: PAGE_ORDER[nextIdx] });
+    }
+    return true;
   }
 
   const sessionStore = useSessionStore();

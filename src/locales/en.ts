@@ -202,6 +202,7 @@ export default {
     screenOn: 'Screen On',
     noSession: 'No active session. Please connect to a device.',
     shortcuts: 'Shortcuts: Ctrl+S Screenshot | Ctrl+F Fullscreen | Alt+Arrows Rotate',
+    openFloatingPanel: 'Pop Out',
   },
   
   // Session Status
@@ -236,5 +237,31 @@ export default {
     scrcpyPath: 'Scrcpy Path',
     pathPlaceholder: 'Leave empty to use PATH',
     settingsSaved: 'Settings saved',
+    // Screenshot
+    screenshot: 'Screenshot Settings',
+    screenshotFilename: 'Filename Template',
+    screenshotFilenameHint: 'Available: {device}, {date}, {time}, {session}',
+    screenshotPath: 'Save Directory',
+    screenshotPathPlaceholder: 'Leave empty for default',
+    screenshotClipboard: 'Also copy to clipboard',
+  },
+  
+  // About
+  about: {
+    title: 'About',
+    description: 'A cross-platform GUI for Android screen mirroring',
+    github: 'GitHub',
+    credits: 'Credits',
+    scrcpyCredit: 'Built on top of scrcpy by Genymobile',
+    tauriCredit: 'Powered by Tauri',
+    naiveCredit: 'UI components by Naive UI',
+    version: 'Version',
+  },
+  
+  // Mirror View
+  mirror: {
+    title: 'Screen Preview',
+    fps: 'Refresh Rate',
+    connecting: 'Connecting to device...',
   },
 };

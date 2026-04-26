@@ -5,7 +5,9 @@ import { useMessage, NTag, NButton, NAlert, NIcon } from 'naive-ui';
 import { DesktopOutline } from '@vicons/ionicons5';
 import { useSessionStore } from '../stores/sessionStore';
 import { stopSession } from '../api/sessions';
+import { openFloatingPanel } from '../api/windows';
 import DeviceControlPanel from '../components/DeviceControlPanel.vue';
+import MirrorView from '../components/MirrorView.vue';
 import type { Session } from '../types';
 
 const { t } = useI18n();
@@ -34,6 +36,15 @@ async function onStop(sessionId: string) {
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     stopErrors.value[sessionId] = msg;
+    message.error(msg);
+  }
+}
+
+async function onOpenFloatingPanel() {
+  try {
+    await openFloatingPanel();
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
     message.error(msg);
   }
 }
@@ -133,8 +144,20 @@ function durationOf(s: Session): string {
 
     <!-- Device Control Panel for selected session -->
     <div v-if="selectedSession && selectedSession.status === 'Running'" class="control-section">
-      <h3 class="section-title">{{ t('controls.title') }}</h3>
-      <DeviceControlPanel />
+      <div class="section-header">
+        <h3 class="section-title">{{ t('controls.title') }}</h3>
+        <n-button size="small" quaternary @click="onOpenFloatingPanel">
+          {{ t('controls.openFloatingPanel') }}
+        </n-button>
+      </div>
+      <div class="session-layout">
+        <div class="mirror-area">
+          <MirrorView />
+        </div>
+        <div class="controls-area">
+          <DeviceControlPanel />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -240,6 +263,41 @@ function durationOf(s: Session): string {
 
 .control-section {
   margin-top: 24px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.section-header .section-title {
+  margin: 0;
+}
+
+.session-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.mirror-area {
+  max-width: 320px;
+}
+
+.controls-area {
+  min-width: 0;
+}
+
+@media (max-width: 700px) {
+  .session-layout {
+    grid-template-columns: 1fr;
+  }
+  .mirror-area {
+    max-width: 100%;
+  }
 }
 
 .section-title {

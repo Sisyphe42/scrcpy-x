@@ -20,4 +20,8 @@ export interface AppSettings {
   theme: string;
   maxSessions: number;
   language?: string;
+  // Screenshot settings
+  screenshotFilename?: string;
+  screenshotPath?: string;
+  screenshotClipboard?: boolean;
 }

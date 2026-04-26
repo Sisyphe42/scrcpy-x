@@ -2,11 +2,15 @@
 <script setup lang="ts">
 import { onErrorCaptured, onMounted, onUnmounted, computed, ref } from 'vue';
 import { NConfigProvider, NMessageProvider, NDialogProvider, darkTheme, NAlert, NButton } from 'naive-ui';
-import { handleKeyboard } from './utils/shortcuts';
+import { handleKeyboard, setRouter } from './utils/shortcuts';
 import { useSettingsStore } from './stores/settingsStore';
 import NaiveProvider from './components/NaiveProvider.vue';
+import { useRouter } from 'vue-router';
 
 const settingsStore = useSettingsStore();
+const router = useRouter();
+setRouter(router);
+
 const globalError = ref<string | null>(null);
 
 // Compute the Naive UI theme based on settings

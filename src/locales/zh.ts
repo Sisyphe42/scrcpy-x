@@ -202,6 +202,7 @@ export default {
     screenOn: '打开屏幕',
     noSession: '没有活动会话，请先连接设备',
     shortcuts: '快捷键: Ctrl+S 截图 | Ctrl+F 全屏 | Alt+方向键 旋转',
+    openFloatingPanel: '弹出面板',
   },
   
   // Session Status
@@ -236,5 +237,31 @@ export default {
     scrcpyPath: 'Scrcpy 路径',
     pathPlaceholder: '留空则使用系统 PATH',
     settingsSaved: '设置已保存',
+    // Screenshot
+    screenshot: '截图设置',
+    screenshotFilename: '文件名模板',
+    screenshotFilenameHint: '可用变量: {device}, {date}, {time}, {session}',
+    screenshotPath: '保存目录',
+    screenshotPathPlaceholder: '留空使用默认路径',
+    screenshotClipboard: '同时复制到剪贴板',
+  },
+  
+  // About
+  about: {
+    title: '关于',
+    description: '跨平台 Android 投屏 GUI 工具',
+    github: 'GitHub',
+    credits: '致谢',
+    scrcpyCredit: '基于 Genymobile 的 scrcpy 构建',
+    tauriCredit: '由 Tauri 驱动',
+    naiveCredit: 'UI 组件来自 Naive UI',
+    version: '版本',
+  },
+  
+  // Mirror View
+  mirror: {
+    title: '屏幕预览',
+    fps: '刷新频率',
+    connecting: '正在连接设备...',
   },
 };
