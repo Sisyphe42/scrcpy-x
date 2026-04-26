@@ -1,12 +1,12 @@
 {
   "active_plan": "D:\\projects\\scrcpy-x\\.sisyphus\\plans\\scrcpyx-gui.md",
-  "started_at": "2026-04-22T02:29:46.193Z",
+  "started_at": "2026-04-26T00:00:00.000Z",
   "session_ids": [
-    "ses_2509d6d38ffetBfpmUABQHWbGY"
+    "ses_237dcf1a6ffeSn4m0M7LHvp7B7"
   ],
   "session_origins": {
-    "ses_2509d6d38ffetBfpmUABQHWbGY": "direct"
+    "ses_237dcf1a6ffeSn4m0M7LHvp7B7": "TODO plan update + boulder sync"
   },
   "plan_name": "scrcpyx-gui",
-  "agent": "atlas"
+  "agent": "sisyphus"
 }
