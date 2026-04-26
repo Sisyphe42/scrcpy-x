@@ -34,6 +34,8 @@ pub struct Session {
     pub options: SessionOptions,
     /// Error message (if any)
     pub error: Option<String>,
+    /// Timestamp when the session was started (epoch millis)
+    pub started_at: Option<i64>,
 }
 
 /// Active session with process handle
@@ -60,8 +62,10 @@ impl SessionManager {
         &self,
         device_id: String,
         options: SessionOptions,
+        app_handle: Option<tauri::AppHandle>,
     ) -> Result<Session, String> {
         let session_id = Uuid::new_v4().to_string();
+        let started_at = chrono::Utc::now().timestamp_millis();
         
         // Create session
         let session = Session {
@@ -70,6 +74,7 @@ impl SessionManager {
             status: SessionStatus::Starting,
             options: options.clone(),
             error: None,
+            started_at: Some(started_at),
         };
         
         // Find scrcpy binary
@@ -96,6 +101,92 @@ impl SessionManager {
         
         let mut sessions = self.sessions.lock().await;
         sessions.insert(session_id.clone(), active_session);
+
+        // Emit session-started event
+        if let Some(ref ah) = app_handle {
+            let _ = crate::events::emit_session_started(ah, &crate::events::SessionStartedPayload {
+                session_id: session_id.clone(),
+                device_id: device_id.clone(),
+            });
+        }
+
+        // Spawn background monitor for process exit
+        let monitor_sessions = self.sessions.clone();
+        let monitor_session_id = session_id.clone();
+        let monitor_app_handle = app_handle.clone();
+        std::thread::spawn(move || {
+            // Wait a moment for the session to be fully stored
+            std::thread::sleep(std::time::Duration::from_millis(200));
+            
+            // Create a small tokio runtime just for acquiring the async mutex
+            let rt = tokio::runtime::Builder::new_current_thread()
+                .enable_all()
+                .build()
+                .expect("failed to build tokio runtime for process monitor");
+            
+            // Take the process handle out (so we don't hold the lock while waiting)
+            let process = rt.block_on(async {
+                let mut sessions = monitor_sessions.lock().await;
+                sessions.get_mut(&monitor_session_id).and_then(|a| a.process.take())
+            });
+            
+            let Some(mut process) = process else { return };
+            
+            // Block this thread waiting for the child to exit (no lock held)
+            let result = process.wait();
+            
+            // Now re-acquire the lock to update session status
+            match result {
+                Ok(exit_status) => {
+                    let error_msg = if !exit_status.success() {
+                        Some(format!(
+                            "scrcpy exited with code: {}",
+                            exit_status.code().map(|c| c.to_string()).unwrap_or_else(|| "unknown".to_string())
+                        ))
+                    } else {
+                        None
+                    };
+                    
+                    rt.block_on(async {
+                        let mut sessions = monitor_sessions.lock().await;
+                        if let Some(active) = sessions.get_mut(&monitor_session_id) {
+                            active.session.status = if exit_status.success() { SessionStatus::Stopped } else { SessionStatus::Error };
+                            active.session.error = error_msg.clone();
+                        }
+                    });
+
+                    // Emit event to frontend
+                    if let Some(ref ah) = monitor_app_handle {
+                        if exit_status.success() {
+                            let _ = crate::events::emit_session_ended(ah, &crate::events::SessionEndedPayload {
+                                session_id: monitor_session_id.clone(),
+                                reason: "Process exited normally".to_string(),
+                            });
+                        } else {
+                            let _ = crate::events::emit_session_error(ah, &crate::events::SessionErrorPayload {
+                                session_id: monitor_session_id.clone(),
+                                error: error_msg.unwrap_or_else(|| "Process exited with error".to_string()),
+                            });
+                        }
+                    }
+                }
+                Err(e) => {
+                    rt.block_on(async {
+                        let mut sessions = monitor_sessions.lock().await;
+                        if let Some(active) = sessions.get_mut(&monitor_session_id) {
+                            active.session.status = SessionStatus::Error;
+                            active.session.error = Some(format!("Failed to wait on process: {}", e));
+                        }
+                    });
+                    if let Some(ref ah) = monitor_app_handle {
+                        let _ = crate::events::emit_session_error(ah, &crate::events::SessionErrorPayload {
+                            session_id: monitor_session_id.clone(),
+                            error: format!("Process monitor error: {}", e),
+                        });
+                    }
+                }
+            }
+        });
         
         Ok(Session {
             status: SessionStatus::Running,
@@ -109,15 +200,8 @@ impl SessionManager {
         
         if let Some(mut active) = sessions.remove(session_id) {
             if let Some(ref mut process) = active.process {
-                // Try graceful termination first
-                #[cfg(target_os = "windows")]
+                // Kill the process (cross-platform)
                 process.kill().ok();
-                
-                #[cfg(not(target_os = "windows"))]
-                {
-                    use std::signal::Signal;
-                    process.signal(Signal::SIGTERM).ok();
-                }
             }
             Ok(())
         } else {
@@ -164,8 +248,9 @@ lazy_static::lazy_static! {
 pub async fn launch_session(
     device_id: String,
     options: SessionOptions,
+    app_handle: Option<tauri::AppHandle>,
 ) -> Result<Session, String> {
-    SESSION_MANAGER.launch(device_id, options).await
+    SESSION_MANAGER.launch(device_id, options, app_handle).await
 }
 
 /// Stop a session

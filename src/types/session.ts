@@ -43,4 +43,6 @@ export interface Session {
   status: SessionStatus;
   options: SessionOptions;
   error?: string;
+  /** Epoch millis when the session was started */
+  startedAt?: number;
 }

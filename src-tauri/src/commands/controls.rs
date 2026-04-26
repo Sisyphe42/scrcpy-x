@@ -7,7 +7,8 @@ use crate::controls::{send_key_event as ctrl_send_key_event,
                      set_rotation as ctrl_set_rotation,
                      set_volume as ctrl_set_volume,
                      turn_screen_on as ctrl_turn_screen_on,
-                     turn_screen_off as ctrl_turn_screen_off};
+                     turn_screen_off as ctrl_turn_screen_off,
+                     screencap_base64 as ctrl_screencap_base64};
 
 /// Send a key event to a device
 #[tauri::command]
@@ -43,4 +44,10 @@ pub async fn turn_screen_on(device_id: String) -> Result<(), String> {
 #[tauri::command]
 pub async fn turn_screen_off(device_id: String) -> Result<(), String> {
     ctrl_turn_screen_off(device_id).await
+}
+
+/// Capture screenshot as base64 data URI for embedded mirroring
+#[tauri::command]
+pub async fn screencap_base64(device_id: String) -> Result<String, String> {
+    ctrl_screencap_base64(device_id).await
 }

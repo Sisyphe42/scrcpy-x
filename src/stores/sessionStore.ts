@@ -97,10 +97,13 @@ export const useSessionStore = defineStore('session', () => {
     try {
       void await listen('session-started', (event) => {
         const session = event.payload as Session;
-        addSession(session);
+        // Only add if not already present (avoid duplicates from manual + event)
+        if (!sessions.value.find(s => s.id === session.id)) {
+          addSession(session);
+        }
       });
       void await listen('session-ended', (event) => {
-        const payload = event.payload as { sessionId: string };
+        const payload = event.payload as { sessionId: string; reason: string };
         removeSession(payload.sessionId);
       });
       void await listen('session-error', (event) => {

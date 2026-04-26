@@ -17,6 +17,8 @@ use commands::{
     get_profiles, get_profile, save_profile, delete_profile, set_default_profile,
     get_settings, save_settings, get_adb_path, get_scrcpy_path,
     send_key_event, take_screenshot, set_rotation, set_volume, turn_screen_on, turn_screen_off,
+    screencap_base64,
+    open_floating_panel, close_floating_panel,
 };
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -62,6 +64,10 @@ pub fn run() {
             set_volume,
             turn_screen_on,
             turn_screen_off,
+            screencap_base64,
+            // Window commands
+            open_floating_panel,
+            close_floating_panel,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

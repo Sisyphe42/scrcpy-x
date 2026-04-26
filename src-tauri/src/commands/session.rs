@@ -99,9 +99,10 @@ impl From<SessionOptions> for SessionOpts {
 pub async fn launch_session(
     device_id: String,
     options: SessionOptions,
+    app_handle: tauri::AppHandle,
 ) -> Result<Session, String> {
     let opts: SessionOpts = options.into();
-    session::launch_session(device_id, opts).await
+    session::launch_session(device_id, opts, Some(app_handle)).await
 }
 
 /// Stop a running session

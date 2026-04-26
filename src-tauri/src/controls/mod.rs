@@ -6,6 +6,7 @@
 use std::path::PathBuf;
 use std::process::Command;
 
+use base64::Engine;
 use crate::binaries::find_adb;
 
 /// Send a key event to a device via ADB
@@ -53,21 +54,27 @@ pub async fn set_rotation(device_id: String, orientation: i32) -> Result<(), Str
     let adb_path = find_adb().map_err(|e| format!("{}", e))?;
 
     // Disable accelerometer rotation and force the requested rotation
-    let cmds = [
-        ["-s", &device_id, "shell", "settings", "put", "system", "accelerometer_rotation", "0"],
-        ["-s", &device_id, "shell", "settings", "put", "system", "user_rotation", &orientation.to_string()],
-    ];
-
-    for c in &cmds {
-        let status = Command::new(&adb_path)
-            .args(c.iter().map(|s| s.to_string()).collect::<Vec<String>>())
-            .output()
-            .map_err(|e| format!("Failed to execute adb: {}", e))?;
-        if !status.status.success() {
-            let err = String::from_utf8_lossy(&status.stderr);
-            return Err(format!("ADB rotation failed: {}", err));
-        }
+    // Use content provider for broader compatibility
+    let disable_rotation = Command::new(&adb_path)
+        .args(["-s", &device_id, "shell", "settings", "put", "system", "accelerometer_rotation", "0"])
+        .output()
+        .map_err(|e| format!("Failed to execute adb: {}", e))?;
+    
+    if !disable_rotation.status.success() {
+        let err = String::from_utf8_lossy(&disable_rotation.stderr);
+        return Err(format!("ADB disable auto-rotation failed: {}", err));
     }
+
+    let set_rotation = Command::new(&adb_path)
+        .args(["-s", &device_id, "shell", "settings", "put", "system", "user_rotation", &orientation.to_string()])
+        .output()
+        .map_err(|e| format!("Failed to execute adb: {}", e))?;
+    
+    if !set_rotation.status.success() {
+        let err = String::from_utf8_lossy(&set_rotation.stderr);
+        return Err(format!("ADB rotation failed: {}", err));
+    }
+
     Ok(())
 }
 
@@ -97,13 +104,38 @@ pub async fn set_volume(device_id: String, level: i32) -> Result<(), String> {
     }
 }
 
-/// Turn screen on by sending power key Event
+/// Turn screen on using a wake-up approach
 pub async fn turn_screen_on(device_id: String) -> Result<(), String> {
     let adb_path = find_adb().map_err(|e| format!("{}", e))?;
+    
+    // Use the power key only if the screen is off, to avoid toggling it off
+    // First, check display state
+    let check = Command::new(&adb_path)
+        .args(["-s", &device_id, "shell", "dumpsys", "power", "|", "grep", "mWakefulness"])
+        .output()
+        .map_err(|e| format!("Failed to check screen state: {}", e))?;
+    
+    let output_str = String::from_utf8_lossy(&check.stdout).to_lowercase();
+    let is_asleep = output_str.contains("asleep") || output_str.contains("dozing");
+    
+    if is_asleep {
+        // Send power key to wake up
+        let status = Command::new(&adb_path)
+            .args(["-s", &device_id, "shell", "input", "keyevent", "26"])
+            .output()
+            .map_err(|e| format!("Failed to execute adb: {}", e))?;
+        if !status.status.success() {
+            let err = String::from_utf8_lossy(&status.stderr);
+            return Err(format!("ADB turn screen on failed: {}", err));
+        }
+    }
+    
+    // Also send a wakeup key to ensure the screen turns on
     let status = Command::new(&adb_path)
-        .args(["-s", &device_id, "shell", "input", "keyevent", "26"])
+        .args(["-s", &device_id, "shell", "input", "keyevent", "WAKEUP"])
         .output()
         .map_err(|e| format!("Failed to execute adb: {}", e))?;
+    
     if status.status.success() {
         Ok(())
     } else {
@@ -112,18 +144,47 @@ pub async fn turn_screen_on(device_id: String) -> Result<(), String> {
     }
 }
 
-/// Turn screen off by sending power key Event
+/// Turn screen off by sending power key (only if currently awake)
 pub async fn turn_screen_off(device_id: String) -> Result<(), String> {
-    // Use same power key event to toggle power state
+    let adb_path = find_adb().map_err(|e| format!("{}", e))?;
+    
+    // Check if screen is already off to avoid toggling back on
+    let check = Command::new(&adb_path)
+        .args(["-s", &device_id, "shell", "dumpsys", "power", "|", "grep", "mWakefulness"])
+        .output()
+        .map_err(|e| format!("Failed to check screen state: {}", e))?;
+    
+    let output_str = String::from_utf8_lossy(&check.stdout).to_lowercase();
+    let is_awake = output_str.contains("awake");
+    
+    if is_awake {
+        let status = Command::new(&adb_path)
+            .args(["-s", &device_id, "shell", "input", "keyevent", "26"])
+            .output()
+            .map_err(|e| format!("Failed to execute adb: {}", e))?;
+        if !status.status.success() {
+            let err = String::from_utf8_lossy(&status.stderr);
+            return Err(format!("ADB turn screen off failed: {}", err));
+        }
+    }
+    
+    Ok(())
+}
+
+/// Capture a screenshot as base64-encoded PNG for inline display.
+/// Used by the embedded mirroring view for periodic frame updates.
+pub async fn screencap_base64(device_id: String) -> Result<String, String> {
     let adb_path = find_adb().map_err(|e| format!("{}", e))?;
     let status = Command::new(&adb_path)
-        .args(["-s", &device_id, "shell", "input", "keyevent", "26"])
+        .args(["-s", &device_id, "shell", "screencap", "-p"])
         .output()
-        .map_err(|e| format!("Failed to execute adb: {}", e))?;
-    if status.status.success() {
-        Ok(())
-    } else {
+        .map_err(|e| format!("Failed to execute adb screencap: {}", e))?;
+
+    if !status.status.success() {
         let err = String::from_utf8_lossy(&status.stderr);
-        Err(format!("ADB turn screen off failed: {}", err))
+        return Err(format!("ADB screencap failed: {}", err));
     }
+
+    let b64 = base64::engine::general_purpose::STANDARD.encode(&status.stdout);
+    Ok(format!("data:image/png;base64,{}", b64))
 }

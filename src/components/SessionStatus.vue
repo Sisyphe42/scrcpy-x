@@ -42,7 +42,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted, onUnmounted } from 'vue';
 import { useI18n } from 'vue-i18n';
 import type { Session } from '../types';
 import { stopSession } from '../api/sessions';
@@ -55,6 +55,17 @@ const store = useSessionStore();
 const sessionsList = computed(() => store.sessions);
 const activeSessions = computed(() => sessionsList.value.filter((s: Session) => s.status !== 'Stopped'));
 const stopErrors = ref<Record<string, string>>({});
+
+// Live timer: update every second so duration ticks in real time
+const now = ref(Date.now());
+let timer: ReturnType<typeof setInterval> | null = null;
+
+onMounted(() => {
+  timer = setInterval(() => { now.value = Date.now(); }, 1000);
+});
+onUnmounted(() => {
+  if (timer) { clearInterval(timer); timer = null; }
+});
 
 function selectSession(s: Session) {
   emit('select', s);
@@ -93,9 +104,9 @@ function getStatusText(status: Session['status']): string {
 }
 
 function durationOf(s: Session): string {
-  const startedAt = (s as any).startedAt;
-  if (!startedAt) return '—';
-  const diff = Date.now() - new Date(startedAt).getTime();
+  if (!s.startedAt) return '—';
+  const diff = now.value - s.startedAt;
+  if (diff < 0) return '—';
   const totalSec = Math.floor(diff / 1000);
   const h = Math.floor(totalSec / 3600);
   const m = Math.floor((totalSec % 3600) / 60);

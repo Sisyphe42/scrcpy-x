@@ -53,7 +53,14 @@ export async function launchSession(deviceId: string, options: SessionOptions): 
     const session = await invoke<Session>('launch_session', { deviceId, options });
     const store = useSessionStore();
     if (session) {
-      store.addSession(session);
+      // Add startedAt if backend didn't provide it (fallback)
+      if (!session.startedAt) {
+        (session as Session & { startedAt?: number }).startedAt = Date.now();
+      }
+      // Only add to store if not already present (session-started event may have added it)
+      if (!store.sessions.find(s => s.id === session.id)) {
+        store.addSession(session);
+      }
     }
     return session;
   } catch (err) {

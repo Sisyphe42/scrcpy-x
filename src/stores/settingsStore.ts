@@ -18,6 +18,9 @@ function loadSettingsFromStorage(): AppSettings {
           theme: parsed.theme ?? 'system',
           maxSessions: parsed.maxSessions ?? 1,
           language: parsed.language ?? 'en',
+          screenshotFilename: parsed.screenshotFilename ?? '{device}_{date}_{time}',
+          screenshotPath: parsed.screenshotPath ?? '',
+          screenshotClipboard: parsed.screenshotClipboard ?? false,
         };
       }
     }
@@ -38,6 +41,9 @@ function loadSettingsFromStorage(): AppSettings {
     theme: 'system',
     maxSessions: 1,
     language: 'en',
+    screenshotFilename: '{device}_{date}_{time}',
+    screenshotPath: '',
+    screenshotClipboard: false,
   };
 }
 
