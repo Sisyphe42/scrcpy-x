@@ -9,14 +9,14 @@ import { useSessionStore } from './sessionStore';
 const DEVICES_KEY = 'scrcpyx-devices';
 const SELECTED_DEVICE_KEY = 'scrcpyx-selectedDevice';
 
-function loadDevicesFromStorage(): Device[] {
-  try {
-    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(DEVICES_KEY) : null;
-    if (raw) return JSON.parse(raw) as Device[];
-  } catch {
-    // ignore
+// Clear stale device data on startup - devices may have disconnected
+try {
+  if (typeof localStorage !== 'undefined') {
+    localStorage.removeItem(DEVICES_KEY);
+    localStorage.removeItem(SELECTED_DEVICE_KEY);
   }
-  return [];
+} catch {
+  // ignore
 }
 
 function persistDevices(devices: Device[]) {
@@ -26,15 +26,6 @@ function persistDevices(devices: Device[]) {
     }
   } catch {
     // ignore
-  }
-}
-
-function loadSelectedDeviceId(): string | null {
-  try {
-    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(SELECTED_DEVICE_KEY) : null;
-    return raw ?? null;
-  } catch {
-    return null;
   }
 }
 
@@ -50,8 +41,8 @@ function persistSelectedDeviceId(id: string | null) {
 
 export const useDeviceStore = defineStore('device', () => {
   // state
-  const devices = ref<Device[]>(loadDevicesFromStorage());
-  const selectedDeviceId = ref<string | null>(loadSelectedDeviceId());
+  const devices = ref<Device[]>([]);
+  const selectedDeviceId = ref<string | null>(null);
   const loading = ref(false);
 
   // getters
@@ -110,8 +101,8 @@ export const useDeviceStore = defineStore('device', () => {
           if (active?.deviceId === id) {
             sessionStore.updateSessionStatus(active.id, 'Stopped', 'Device disconnected');
           }
-        } catch {
-          // ignore if sessionStore is not ready yet
+        } catch (sessionErr) {
+          console.warn('Failed to update session on device disconnect:', sessionErr);
         }
       });
 
@@ -128,7 +119,8 @@ export const useDeviceStore = defineStore('device', () => {
       }
       // Unlisten is not strictly required in this app lifetime; kept for completeness
       // (Return value not used here since store persists for app lifetime)
-    } catch {
+    } catch (err) {
+      console.warn('Failed to initialize device event listeners:', err);
       // If event system isn't available (e.g., SSR during tests), skip gracefully
     }
   })();

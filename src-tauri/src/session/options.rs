@@ -7,6 +7,7 @@ use std::collections::HashMap;
 
 /// Session options (scrcpy configuration)
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct SessionOptions {
     // Connection options
     /// Device serial (if None, uses default device)

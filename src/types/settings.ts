@@ -19,4 +19,5 @@ export interface AppSettings {
   binaryPaths: BinaryPaths;
   theme: string;
   maxSessions: number;
+  language?: string;
 }

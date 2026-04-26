@@ -9,7 +9,7 @@
           <n-switch v-model:value="localProfile.is_default" />
         </n-form-item>
         <n-form-item label="Options">
-          <SessionOptionsForm :options="localProfile.options" @update="opts => localProfile.options = opts" />
+          <SessionOptionsForm v-model="localProfile.options" />
         </n-form-item>
       </n-form>
     </div>
@@ -24,7 +24,10 @@
 import { defineComponent, ref, watch, toRef } from 'vue';
 import { NModal, NForm, NFormItem, NInput, NSwitch, NButton } from 'naive-ui';
 import type { Profile } from '../types/profile';
+import type { SessionOptions } from '../types/session';
 import SessionOptionsForm from './SessionOptionsForm.vue';
+
+const DEFAULT_OPTIONS: SessionOptions = {};
 
 export default defineComponent({
   name: 'ProfileEditor',
@@ -35,14 +38,22 @@ export default defineComponent({
   },
   emits: ['update:visible', 'save'],
   setup(props, { emit }) {
-    const localProfile = ref<Profile>({ ...props.modelValue });
+    const localProfile = ref<Profile>({ 
+      name: '', 
+      is_default: false, 
+      options: { ...DEFAULT_OPTIONS } 
+    });
     const visible = toRef(props, 'visible');
 
     // React to external model changes
     watch(
       () => props.modelValue,
       (newVal) => {
-        localProfile.value = { ...newVal };
+        localProfile.value = { 
+          name: newVal.name, 
+          is_default: newVal.is_default, 
+          options: newVal.options ? { ...newVal.options } : { ...DEFAULT_OPTIONS }
+        };
       },
       { immediate: true }
     );
@@ -50,7 +61,12 @@ export default defineComponent({
     // Keep localProfile in sync when modal is closed without saving
     watch(visible, (val) => {
       if (!val) {
-        localProfile.value = { ...props.modelValue };
+        const src = props.modelValue;
+        localProfile.value = { 
+          name: src.name, 
+          is_default: src.is_default, 
+          options: src.options ? { ...src.options } : { ...DEFAULT_OPTIONS }
+        };
       }
     });
 

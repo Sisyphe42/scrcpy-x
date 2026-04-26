@@ -22,6 +22,7 @@ pub enum SessionStatus {
 
 /// Session information
 #[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct Session {
     /// Session ID
     pub id: String,

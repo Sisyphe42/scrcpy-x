@@ -9,6 +9,7 @@ use crate::session::{self, Session, SessionStatus, SessionOptions as SessionOpts
 /// Session options (scrcpy configuration)
 /// This is a simplified version for the frontend
 #[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
 pub struct SessionOptions {
     // Connection options
     pub serial: Option<String>,

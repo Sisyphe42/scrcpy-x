@@ -7,9 +7,28 @@ const SETTINGS_KEY = 'scrcpyx-settings';
 function loadSettingsFromStorage(): AppSettings {
   try {
     const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(SETTINGS_KEY) : null;
-    if (raw) return JSON.parse(raw) as AppSettings;
-  } catch {
-    // ignore
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      // Validate that we got a valid object
+      if (parsed && typeof parsed === 'object') {
+        return {
+          lastProfile: parsed.lastProfile ?? undefined,
+          windowBounds: parsed.windowBounds ?? { x: 0, y: 0, width: 800, height: 600 },
+          binaryPaths: parsed.binaryPaths ?? {},
+          theme: parsed.theme ?? 'system',
+          maxSessions: parsed.maxSessions ?? 1,
+          language: parsed.language ?? 'en',
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('Failed to load settings from storage:', err);
+    // Clear corrupted data
+    try {
+      localStorage.removeItem(SETTINGS_KEY);
+    } catch {
+      // ignore
+    }
   }
   // Default settings
   return {
@@ -18,6 +37,7 @@ function loadSettingsFromStorage(): AppSettings {
     binaryPaths: {},
     theme: 'system',
     maxSessions: 1,
+    language: 'en',
   };
 }
 

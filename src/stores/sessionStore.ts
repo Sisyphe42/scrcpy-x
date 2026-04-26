@@ -6,14 +6,17 @@ import { listen } from '@tauri-apps/api/event';
 const SESSIONS_KEY = 'scrcpyx-sessions';
 const ACTIVE_SESSION_KEY = 'scrcpyx-activeSession';
 
-function loadSessionsFromStorage(): Session[] {
+// Sessions are ephemeral - always clear stale data on startup
+// (backend processes don't survive app restart)
+function clearStaleSessionData() {
   try {
-    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(SESSIONS_KEY) : null;
-    if (raw) return JSON.parse(raw) as Session[];
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem(SESSIONS_KEY);
+      localStorage.removeItem(ACTIVE_SESSION_KEY);
+    }
   } catch {
     // ignore
   }
-  return [];
 }
 
 function persistSessions(sessions: Session[]) {
@@ -23,15 +26,6 @@ function persistSessions(sessions: Session[]) {
     }
   } catch {
     // ignore
-  }
-}
-
-function loadActiveSessionId(): string | null {
-  try {
-    const raw = typeof localStorage !== 'undefined' ? localStorage.getItem(ACTIVE_SESSION_KEY) : null;
-    return raw ?? null;
-  } catch {
-    return null;
   }
 }
 
@@ -45,9 +39,12 @@ function persistActiveSessionId(id: string | null) {
   }
 }
 
+// Clear stale sessions on module load
+clearStaleSessionData();
+
 export const useSessionStore = defineStore('session', () => {
-  const sessions = ref<Session[]>(loadSessionsFromStorage());
-  const activeSessionId = ref<string | null>(loadActiveSessionId());
+  const sessions = ref<Session[]>([]);
+  const activeSessionId = ref<string | null>(null);
 
   const activeSession = computed<Session | null>(() => {
     return sessions.value.find(s => s.id === activeSessionId.value) ?? null;

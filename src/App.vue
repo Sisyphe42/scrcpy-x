@@ -1,15 +1,41 @@
-  
+   
 <script setup lang="ts">
-import { onErrorCaptured, onMounted, onUnmounted } from 'vue';
-import { NConfigProvider, NMessageProvider, NDialogProvider } from 'naive-ui';
-import { isScrcpyError, getErrorMessage } from './utils/errors';
-import { showError } from './utils/notifications';
+import { onErrorCaptured, onMounted, onUnmounted, computed, ref } from 'vue';
+import { NConfigProvider, NMessageProvider, NDialogProvider, darkTheme, NAlert, NButton } from 'naive-ui';
 import { handleKeyboard } from './utils/shortcuts';
+import { useSettingsStore } from './stores/settingsStore';
+import NaiveProvider from './components/NaiveProvider.vue';
+
+const settingsStore = useSettingsStore();
+const globalError = ref<string | null>(null);
+
+// Compute the Naive UI theme based on settings
+const naiveTheme = computed(() => {
+  const theme = settingsStore.settings.theme;
+  if (theme === 'dark') {
+    return darkTheme;
+  } else if (theme === 'system') {
+    // Use system preference
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    return prefersDark ? darkTheme : null;
+  }
+  // 'light' or default
+  return null;
+});
 
 // Global error boundary: capture errors from child components and present user-friendly messages
 onMounted(() => {
   // Register global keyboard shortcuts
   window.addEventListener('keydown', handleKeyboard);
+  
+  // Listen for system theme changes when using 'system' theme
+  const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+  mediaQuery.addEventListener('change', () => {
+    if (settingsStore.settings.theme === 'system') {
+      // Force re-computation by touching the store
+      settingsStore.updateSettings({ theme: 'system' });
+    }
+  });
 });
 
 onUnmounted(() => {
@@ -17,23 +43,43 @@ onUnmounted(() => {
 });
 
 onErrorCaptured((err: any, _vm: any, _info: string) => {
-  if (isScrcpyError(err)) {
-    const msg = getErrorMessage(err);
-    showError(msg);
-  } else {
-    showError('An unexpected error occurred.');
-  }
-  // Do not propagate further
-  return false;
+  console.error('Global error captured:', err);
+  const msg = err instanceof Error ? err.message : String(err);
+  globalError.value = msg;
+  // Allow error to propagate for debugging
+  return true;
 });
- 
+
+function clearError() {
+  globalError.value = null;
+}
+
+function clearCacheAndReload() {
+  localStorage.clear();
+  location.reload();
+}
 </script>
 
 <template>
-  <n-config-provider>
+  <n-config-provider :theme="naiveTheme">
     <n-message-provider>
       <n-dialog-provider>
-        <router-view />
+        <NaiveProvider>
+          <div v-if="globalError" style="margin: 16px;">
+            <n-alert
+              type="error"
+              title="Application Error"
+              closable
+              @close="clearError"
+            >
+              {{ globalError }}
+            </n-alert>
+            <n-button size="small" style="margin-top: 8px;" @click="clearCacheAndReload">
+              Clear Cache & Reload
+            </n-button>
+          </div>
+          <router-view v-else />
+        </NaiveProvider>
       </n-dialog-provider>
     </n-message-provider>
   </n-config-provider>
