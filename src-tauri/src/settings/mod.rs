@@ -44,11 +44,48 @@ pub struct BinaryPaths {
     pub scrcpy: Option<String>,
 }
 
+/// How the app resolves ADB and scrcpy binaries.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq)]
+#[serde(rename_all = "lowercase")]
+pub enum BinarySource {
+    /// Auto-detect from system PATH, fall back to bundled
+    Auto,
+    /// Use binaries bundled with the app
+    Bundled,
+    /// User-specified paths in binary_paths
+    Custom,
+}
+
+impl Default for BinarySource {
+    fn default() -> Self {
+        Self::Auto
+    }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BinarySourceConfig {
+    pub adb_source: BinarySource,
+    pub scrcpy_source: BinarySource,
+    pub adb_path: Option<String>,
+    pub scrcpy_path: Option<String>,
+}
+
+impl Default for BinarySourceConfig {
+    fn default() -> Self {
+        Self {
+            adb_source: BinarySource::Auto,
+            scrcpy_source: BinarySource::Auto,
+            adb_path: None,
+            scrcpy_path: None,
+        }
+    }
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppSettings {
     pub last_profile: Option<String>,
     pub window_bounds: Option<WindowBounds>,
-    pub binary_paths: BinaryPaths,
+    pub binary_config: BinarySourceConfig,
     pub theme: String,
     pub max_sessions: u32,
 }
@@ -58,7 +95,7 @@ impl Default for AppSettings {
         Self {
             last_profile: None,
             window_bounds: None,
-            binary_paths: BinaryPaths::default(),
+            binary_config: BinarySourceConfig::default(),
             theme: "system".to_string(),
             max_sessions: 5,
         }
@@ -85,9 +122,12 @@ pub fn load_settings() -> Result<AppSettings, String> {
     if settings.max_sessions == 0 {
         settings.max_sessions = 5;
     }
-    // last_profile, window_bounds, and binary_paths are optional and already handled by types
-    if settings.binary_paths.adb.is_none() && settings.binary_paths.scrcpy.is_none() {
-        settings.binary_paths = BinaryPaths::default();
+    // Ensure binary_config has valid defaults
+    if settings.binary_config.adb_source == BinarySource::Custom && settings.binary_config.adb_path.is_none() {
+        settings.binary_config.adb_source = BinarySource::Auto;
+    }
+    if settings.binary_config.scrcpy_source == BinarySource::Custom && settings.binary_config.scrcpy_path.is_none() {
+        settings.binary_config.scrcpy_source = BinarySource::Auto;
     }
     Ok(settings)
 }

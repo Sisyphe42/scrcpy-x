@@ -3,6 +3,7 @@
 ## Working Rules
 
 - **Commit requires user review**: Never commit without explicit user approval. Present changes for review first.
+- **Commit message with review request**: When requesting review for commit, always include the commit message in the request. Format: "Review needed for commit: [commit message]"
 
 ## Current Status
 

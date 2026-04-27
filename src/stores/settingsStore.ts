@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import { AppSettings, BinaryPaths } from '../types';
+import { AppSettings, BinarySourceConfig } from '../types';
 
 const SETTINGS_KEY = 'scrcpyx-settings';
 
@@ -14,13 +14,19 @@ function loadSettingsFromStorage(): AppSettings {
         return {
           lastProfile: parsed.lastProfile ?? undefined,
           windowBounds: parsed.windowBounds ?? { x: 0, y: 0, width: 800, height: 600 },
-          binaryPaths: parsed.binaryPaths ?? {},
+          binaryConfig: parsed.binaryConfig ?? {
+            adbSource: 'auto',
+            scrcpySource: 'auto',
+            adbPath: undefined,
+            scrcpyPath: undefined,
+          },
           theme: parsed.theme ?? 'system',
           maxSessions: parsed.maxSessions ?? 1,
           language: parsed.language ?? 'en',
-          screenshotFilename: parsed.screenshotFilename ?? '{device}_{date}_{time}',
+          screenshotFilename: parsed.screenshotFilename ?? 'screenshot_{device}_{date:yyyy-MM-dd}_{time:HH-mm-ss}_scrcpyx',
           screenshotPath: parsed.screenshotPath ?? '',
           screenshotClipboard: parsed.screenshotClipboard ?? false,
+          screenshotFormat: parsed.screenshotFormat ?? 'png',
         };
       }
     }
@@ -37,13 +43,19 @@ function loadSettingsFromStorage(): AppSettings {
   return {
     lastProfile: undefined,
     windowBounds: { x: 0, y: 0, width: 800, height: 600 },
-    binaryPaths: {},
+    binaryConfig: {
+      adbSource: 'auto',
+      scrcpySource: 'auto',
+      adbPath: undefined,
+      scrcpyPath: undefined,
+    },
     theme: 'system',
     maxSessions: 1,
     language: 'en',
-    screenshotFilename: '{device}_{date}_{time}',
+    screenshotFilename: 'screenshot_{device}_{date:yyyy-MM-dd}_{time:HH-mm-ss}_scrcpyx',
     screenshotPath: '',
     screenshotClipboard: false,
+    screenshotFormat: 'png',
   };
 }
 
@@ -61,7 +73,7 @@ export const useSettingsStore = defineStore('settings', () => {
   const settings = ref<AppSettings>(loadSettingsFromStorage());
 
   const theme = computed(() => settings.value.theme);
-  const binaryPaths = computed<BinaryPaths>(() => settings.value.binaryPaths ?? {});
+  const binaryConfig = computed(() => settings.value.binaryConfig);
   const maxSessions = computed<number>(() => settings.value.maxSessions ?? 1);
 
   function updateSettings(partial: Partial<AppSettings>) {
@@ -73,17 +85,19 @@ export const useSettingsStore = defineStore('settings', () => {
     updateSettings({ theme: t });
   }
 
-  function setBinaryPaths(paths: BinaryPaths) {
-    updateSettings({ binaryPaths: paths });
+  function setBinaryConfig(config: Partial<BinarySourceConfig>) {
+    updateSettings({
+      binaryConfig: { ...settings.value.binaryConfig, ...config }
+    });
   }
 
   return {
     settings,
     theme,
-    binaryPaths,
+    binaryConfig,
     maxSessions,
     updateSettings,
     setTheme,
-    setBinaryPaths,
+    setBinaryConfig,
   };
 });

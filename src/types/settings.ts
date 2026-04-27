@@ -13,10 +13,19 @@ export interface BinaryPaths {
   scrcpy?: string;
 }
 
+export type BinarySource = 'auto' | 'bundled' | 'custom';
+
+export interface BinarySourceConfig {
+  adbSource: BinarySource;
+  scrcpySource: BinarySource;
+  adbPath?: string;
+  scrcpyPath?: string;
+}
+
 export interface AppSettings {
   lastProfile?: string;
   windowBounds?: WindowBounds;
-  binaryPaths: BinaryPaths;
+  binaryConfig: BinarySourceConfig;
   theme: string;
   maxSessions: number;
   language?: string;
@@ -24,4 +33,5 @@ export interface AppSettings {
   screenshotFilename?: string;
   screenshotPath?: string;
   screenshotClipboard?: boolean;
+  screenshotFormat?: string;
 }
